@@ -1,6 +1,7 @@
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import "./style/MainCalendar.css";
 
 export const MainCalendar = ({ events, handleEventDrop }) => {
   return (

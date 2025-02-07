@@ -13,7 +13,7 @@ const setEventDate = (dateString, hours, minutes) => {
 const initialEvents = [
   {
     title: "First Session with Alex Stan",
-    start: setEventDate("2025-02-06", 10, 30),
+    start: setEventDate("2025-02-07", 10, 30),
     end: setEventDate("2025-02-06", 11, 30),
     type: "appointment",
   },
@@ -55,8 +55,8 @@ const CalendarApp = () => {
   };
 
   return (
-    <div className="flex p-4 bg-[#E4F6ED] min-h-screen">
-      <div className="w-1/3 p-4 bg-white shadow-lg rounded-lg">
+    <div className="flex flex-col md:flex-row p-4 bg-[#E4F6ED] min-h-screen">
+      <div className="w-full md:w-1/3 p-4 bg-white shadow-lg rounded-lg">
         <MiniCalendar
           setSelectedDate={setSelectedDate}
           selectedDate={selectedDate}
@@ -64,7 +64,7 @@ const CalendarApp = () => {
        <EvenList dailyEvents={dailyEvents}/>
       </div>
 
-      <div className="w-2/3 p-4">
+      <div className="w-full md:w-2/3 p-4 mb-10">
         <MainCalendar
           events={initialEvents}
           handleEventDrop={handleEventDrop}
