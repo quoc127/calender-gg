@@ -38,25 +38,37 @@ const initialEvents = [
 
 const CalendarApp = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [events, setEvents] = useState(initialEvents);
+  const [events, setEvents] = useState(() => {
+    const savedEvents = localStorage.getItem("events");
+    return savedEvents
+      ? JSON.parse(savedEvents).map((event) => ({
+          ...event,
+          start: new Date(event.start),
+          end: event.end ? new Date(event.end) : null,
+        }))
+      : initialEvents;
+  });
 
   const formattedDate = selectedDate.toLocaleDateString("en-CA");
 
-  const dailyEvents = initialEvents.filter((event) => {
+  const dailyEvents = events.filter((event) => {
     const eventDate = event.start.toLocaleDateString("en-CA");
     return eventDate === formattedDate;
   });
 
   const handleEventDrop = (eventDropInfo) => {
     const updatedEvents = events.map((event) =>
-      event.id === eventDropInfo.event.id
+      event.title === eventDropInfo.event.title
         ? {
             ...event,
-            start: eventDropInfo.event.start.toLocaleDateString("en-CA"),
+            start: new Date(eventDropInfo.event.start),
+            end: event.end ? new Date(eventDropInfo.event.end) : null,
           }
         : event
     );
+
     setEvents(updatedEvents);
+    localStorage.setItem("events", JSON.stringify(updatedEvents));
   };
 
   return (
