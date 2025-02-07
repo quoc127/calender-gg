@@ -84,7 +84,7 @@ const CalendarApp = () => {
 
       <div className="w-full md:w-2/3 p-4 mb-10">
         <MainCalendar
-          events={initialEvents}
+          events={events}
           handleEventDrop={handleEventDrop}
         />
       </div>
