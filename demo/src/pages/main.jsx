@@ -14,7 +14,7 @@ const initialEvents = [
   {
     title: "First Session with Alex Stan",
     start: setEventDate("2025-02-07", 10, 30),
-    end: setEventDate("2025-02-06", 11, 30),
+    end: setEventDate("2025-02-07", 11, 30),
     type: "appointment",
   },
   {
@@ -25,8 +25,8 @@ const initialEvents = [
   },
   {
     title: "Webinar: How to cope with trauma",
-    start: setEventDate("2025-02-16", 14, 0),
-    end: setEventDate("2025-02-16", 15, 0),
+    start: setEventDate("2025-02-17", 14, 0),
+    end: setEventDate("2025-02-17", 15, 0),
     type: "event",
   },
   {
@@ -39,16 +39,21 @@ const initialEvents = [
 const CalendarApp = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState(initialEvents);
-  
-  const formattedDate = selectedDate.toISOString().split("T")[0];
-  const dailyEvents = initialEvents.filter(
-    (event) => event.start.toISOString().split("T")[0] === formattedDate
-  );
+
+  const formattedDate = selectedDate.toLocaleDateString("en-CA");
+
+  const dailyEvents = initialEvents.filter((event) => {
+    const eventDate = event.start.toLocaleDateString("en-CA");
+    return eventDate === formattedDate;
+  });
 
   const handleEventDrop = (eventDropInfo) => {
     const updatedEvents = events.map((event) =>
       event.id === eventDropInfo.event.id
-        ? { ...event, start: eventDropInfo.event.start.toISOString() }
+        ? {
+            ...event,
+            start: eventDropInfo.event.start.toLocaleDateString("en-CA"),
+          }
         : event
     );
     setEvents(updatedEvents);
@@ -61,7 +66,7 @@ const CalendarApp = () => {
           setSelectedDate={setSelectedDate}
           selectedDate={selectedDate}
         />
-       <EvenList dailyEvents={dailyEvents}/>
+        <EvenList dailyEvents={dailyEvents} />
       </div>
 
       <div className="w-full md:w-2/3 p-4 mb-10">
