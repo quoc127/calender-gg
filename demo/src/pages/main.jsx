@@ -5,6 +5,8 @@ import "react-calendar/dist/Calendar.css";
 import { EvenList } from "@/components/EventList";
 import { RRule } from "rrule";
 import { EventForm } from "@/components/EventForm";
+import { Button } from "@/components/ui/button";
+import { Note } from "@/components/Note";
 
 const setEventDate = (dateString, hours, minutes) => {
   const date = new Date(dateString);
@@ -14,41 +16,48 @@ const setEventDate = (dateString, hours, minutes) => {
 
 const initialEvents = [
   {
+    id: 1,
     title: "First Session with Alex Stan",
     start: setEventDate("2025-02-07", 10, 30),
     end: setEventDate("2025-02-07", 11, 30),
     type: "appointment",
   },
   {
+    id: 2,
     title: "First Session with Alex Stan",
     start: setEventDate("2025-02-07", 10, 30),
     end: setEventDate("2025-02-07", 11, 30),
     type: "appointment",
   },
   {
+    id: 3,
     title: "First Session with Alex Stan",
     start: setEventDate("2025-02-07", 10, 30),
     end: setEventDate("2025-02-07", 11, 30),
     type: "appointment",
   },
   {
+    id: 4,
     title: "Webinar: How to cope with trauma",
     start: setEventDate("2025-02-06", 14, 0),
     end: setEventDate("2025-02-06", 14, 30),
     type: "event",
   },
   {
+    id: 5,
     title: "Webinar: How to cope with trauma",
     start: setEventDate("2025-02-17", 14, 0),
     end: setEventDate("2025-02-17", 15, 0),
     type: "event",
   },
   {
+    id: 6,
     title: "Click for www.eventbrite.sg",
     start: setEventDate("2025-02-14", 14, 0),
     url: "https://www.eventbrite.sg/e/anh-thuc-su-giau-co-69-tphcm-202122032025-tickets-1108945538959?aff=ebdssbdestsearch&keep_tld=1",
   },
   {
+    id: 7,
     title: "Weekly Meeting",
     start: setEventDate("2025-02-07", 10, 0),
     end: setEventDate("2025-02-07", 11, 30),
@@ -60,6 +69,7 @@ const initialEvents = [
     },
   },
   {
+    id: 8,
     title: "Monthly Report",
     start: setEventDate("2025-02-09", 14, 0),
     end: setEventDate("2025-02-09", 15, 0),
@@ -100,6 +110,7 @@ const generateRecurringEvents = (eventList) => {
 };
 
 const CalendarApp = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [editingEvent, setEditingEvent] = useState(null);
 
@@ -176,29 +187,28 @@ const CalendarApp = () => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 p-4 bg-[#E4F6ED] min-h-screen">
-      <div className="">
-        <div className="w-full h-full lg:h-[590px] xl:h-full md:h-[590px] md:overflow-y-scroll xl:overflow-y-hidden p-4 bg-white shadow-lg rounded-lg">
-          <div className="grid grid-cols-1 lg:grid-cols-2">
-            <MiniCalendar
-              setSelectedDate={setSelectedDate}
-              selectedDate={selectedDate}
-            />
-            <EventForm
-              onAddEvent={addEvent}
-              editingEvent={editingEvent}
-              onUpdateEvent={updateEvent}
-            />
-          </div>
-
-          <EvenList
-            dailyEvents={dailyEvents}
-            onEditEvent={setEditingEvent}
-            onDeleteEvent={deleteEvent}
+      <div className="w-full h-full lg:h-[590px] xl:h-full md:h-[590px] md:overflow-y-scroll xl:overflow-y-hidden p-4 bg-white shadow-lg rounded-lg">
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <MiniCalendar
+            setSelectedDate={setSelectedDate}
+            selectedDate={selectedDate}
+          />
+          <EventForm
+            onAddEvent={addEvent}
+            editingEvent={editingEvent}
+            onUpdateEvent={updateEvent}
           />
         </div>
-      </div>
 
+        <EvenList
+          dailyEvents={dailyEvents}
+          onEditEvent={setEditingEvent}
+          onDeleteEvent={deleteEvent}
+        />
+      </div>
+      <Note isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="w-full min-h-96 p-4 mb-10">
+        <Button onClick={() => setIsOpen(true)}>Note</Button>
         <MainCalendar events={events} handleEventDrop={handleEventDrop} />
       </div>
     </div>
