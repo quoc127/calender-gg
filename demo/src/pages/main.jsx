@@ -161,6 +161,19 @@ const CalendarApp = () => {
     setEditingEvent(null);
   };
 
+  const deleteEvent = (start) => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this event?"
+    );
+    if (!isConfirmed) return;
+
+    const updatedEvents = events.filter(
+      (event) => event.start.getTime() !== start.getTime()
+    );
+    setEvents(updatedEvents);
+    localStorage.setItem("events", JSON.stringify(updatedEvents));
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 p-4 bg-[#E4F6ED] min-h-screen">
       <div className="">
@@ -177,7 +190,11 @@ const CalendarApp = () => {
             />
           </div>
 
-          <EvenList dailyEvents={dailyEvents} onEditEvent={setEditingEvent} />
+          <EvenList
+            dailyEvents={dailyEvents}
+            onEditEvent={setEditingEvent}
+            onDeleteEvent={deleteEvent}
+          />
         </div>
       </div>
 

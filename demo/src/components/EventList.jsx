@@ -1,4 +1,4 @@
-export const EvenList = ({ dailyEvents, onEditEvent }) => {
+export const EvenList = ({ dailyEvents, onEditEvent, onDeleteEvent  }) => {
   return (
     <>
       <h3 className="text-lg font-semibold mt-4">Upcoming Events</h3>
@@ -37,6 +37,13 @@ export const EvenList = ({ dailyEvents, onEditEvent }) => {
                   className="bg-yellow-500 text-black px-3 py-1 rounded"
                 >
                   Edit
+                </button>
+
+                <button
+                  onClick={() => onDeleteEvent(event.start)}
+                  className="bg-yellow-500 text-black px-3 py-1 rounded"
+                >
+                  Delete
                 </button>
               </div>
             </div>
