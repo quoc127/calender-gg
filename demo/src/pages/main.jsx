@@ -4,6 +4,7 @@ import { MiniCalendar } from "@/components/MiniCalendar";
 import "react-calendar/dist/Calendar.css";
 import { EvenList } from "@/components/EventList";
 import { RRule } from "rrule";
+import { EventForm } from "@/components/EventForm";
 
 const setEventDate = (dateString, hours, minutes) => {
   const date = new Date(dateString);
@@ -98,10 +99,10 @@ const generateRecurringEvents = (eventList) => {
   return generatedEvents;
 };
 
-const finalEvents = generateRecurringEvents(initialEvents);
-
 const CalendarApp = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [editingEvent, setEditingEvent] = useState(null);
+
   const [events, setEvents] = useState(() => {
     const savedEvents = localStorage.getItem("events");
     return savedEvents
@@ -136,18 +137,52 @@ const CalendarApp = () => {
     localStorage.setItem("events", JSON.stringify(updatedEvents));
   };
 
+  const addEvent = (eventData) => {
+    const newEvent = {
+      title: eventData.title,
+      start: new Date(eventData.start),
+      end: eventData.end ? new Date(eventData.end) : null,
+      type: eventData.type,
+    };
+
+    const updatedEvents = [...events, newEvent];
+    setEvents(updatedEvents);
+    localStorage.setItem("events", JSON.stringify(updatedEvents));
+  };
+
+  const updateEvent = (eventData) => {
+    const updatedEvents = events.map((event) => {
+      return event.start.getTime() === editingEvent.start.getTime()
+        ? { ...event, ...eventData }
+        : event;
+    });
+    setEvents(updatedEvents);
+    localStorage.setItem("events", JSON.stringify(updatedEvents));
+    setEditingEvent(null);
+  };
+
   return (
-    <div className="flex flex-col md:flex-row p-4 bg-[#E4F6ED] min-h-screen">
-      <div className="w-full md:w-1/3 p-4 bg-white shadow-lg rounded-lg">
-        <MiniCalendar
-          setSelectedDate={setSelectedDate}
-          selectedDate={selectedDate}
-        />
-        <EvenList dailyEvents={dailyEvents} />
+    <div className="grid grid-cols-1 md:grid-cols-2 p-4 bg-[#E4F6ED] min-h-screen">
+      <div className="">
+        <div className="w-full h-full lg:h-[590px] xl:h-full md:h-[590px] md:overflow-y-scroll xl:overflow-y-hidden p-4 bg-white shadow-lg rounded-lg">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
+            <MiniCalendar
+              setSelectedDate={setSelectedDate}
+              selectedDate={selectedDate}
+            />
+            <EventForm
+              onAddEvent={addEvent}
+              editingEvent={editingEvent}
+              onUpdateEvent={updateEvent}
+            />
+          </div>
+
+          <EvenList dailyEvents={dailyEvents} onEditEvent={setEditingEvent} />
+        </div>
       </div>
 
-      <div className="w-full md:w-2/3 p-4 mb-10">
-        <MainCalendar events={finalEvents} handleEventDrop={handleEventDrop} />
+      <div className="w-full min-h-96 p-4 mb-10">
+        <MainCalendar events={events} handleEventDrop={handleEventDrop} />
       </div>
     </div>
   );
