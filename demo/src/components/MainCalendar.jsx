@@ -11,6 +11,7 @@ export const MainCalendar = ({ events, handleEventDrop }) => {
           events={events}
           editable={true}
           eventDrop={handleEventDrop}
+          dayMaxEventRows={3}
           eventClassNames={(event) =>
             event.event.extendedProps.type === "appointment"
               ? "bg-[#0F4C81] text-white"

@@ -19,6 +19,18 @@ const initialEvents = [
     type: "appointment",
   },
   {
+    title: "First Session with Alex Stan",
+    start: setEventDate("2025-02-07", 10, 30),
+    end: setEventDate("2025-02-07", 11, 30),
+    type: "appointment",
+  },
+  {
+    title: "First Session with Alex Stan",
+    start: setEventDate("2025-02-07", 10, 30),
+    end: setEventDate("2025-02-07", 11, 30),
+    type: "appointment",
+  },
+  {
     title: "Webinar: How to cope with trauma",
     start: setEventDate("2025-02-06", 14, 0),
     end: setEventDate("2025-02-06", 14, 30),
@@ -41,9 +53,9 @@ const initialEvents = [
     end: setEventDate("2025-02-07", 11, 30),
     type: "appointment",
     recurrence: {
-      freq: "WEEKLY", 
-      interval: 1, 
-      count: 5, 
+      freq: "WEEKLY",
+      interval: 1,
+      count: 5,
     },
   },
   {
@@ -52,9 +64,9 @@ const initialEvents = [
     end: setEventDate("2025-02-09", 15, 0),
     type: "event",
     recurrence: {
-      freq: "MONTHLY", 
+      freq: "MONTHLY",
       interval: 1,
-      count: 3, 
+      count: 3,
     },
   },
 ];
