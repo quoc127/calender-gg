@@ -9,7 +9,7 @@ export const EventForm = ({ onAddEvent, editingEvent, onUpdateEvent }) => {
   const [end, setEnd] = useState(
     editingEvent ? new Date(editingEvent.end).toISOString().slice(0, 16) : ""
   );
-  const [type, setType] = useState("");
+  const [type, setType] = useState("appointment");
 
   const handleSubmit = (e) => {
     e.preventDefault();

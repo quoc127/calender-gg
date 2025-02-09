@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MainCalendar } from "@/components/MainCalendar";
 import { MiniCalendar } from "@/components/MiniCalendar";
 import "react-calendar/dist/Calendar.css";
@@ -7,128 +7,69 @@ import { RRule } from "rrule";
 import { EventForm } from "@/components/EventForm";
 import { Button } from "@/components/ui/button";
 import { Note } from "@/components/Note";
+import { addEvent, deleteEvent, getEvents, patchEvent } from "@/service/event";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchAllEvents,
+  patchEvents,
+  postEvents,
+  removeEvents,
+} from "@/store/events-slice";
 
-const setEventDate = (dateString, hours, minutes) => {
-  const date = new Date(dateString);
-  date.setHours(hours, minutes);
-  return date;
-};
+// const generateRecurringEvents = (eventList) => {
+//   const generatedEvents = [];
+//   eventList.forEach((event) => {
+//     if (event.recurrence) {
+//       const rule = new RRule({
+//         freq: RRule[event.recurrence.freq],
+//         dtstart: new Date(event.start),
+//         interval: event.recurrence.interval || 1,
+//         count: event.recurrence.count || null,
+//       });
 
-const initialEvents = [
-  {
-    id: 1,
-    title: "First Session with Alex Stan",
-    start: setEventDate("2025-02-07", 10, 30),
-    end: setEventDate("2025-02-07", 11, 30),
-    type: "appointment",
-  },
-  {
-    id: 2,
-    title: "First Session with Alex Stan",
-    start: setEventDate("2025-02-07", 10, 30),
-    end: setEventDate("2025-02-07", 11, 30),
-    type: "appointment",
-  },
-  {
-    id: 3,
-    title: "First Session with Alex Stan",
-    start: setEventDate("2025-02-07", 10, 30),
-    end: setEventDate("2025-02-07", 11, 30),
-    type: "appointment",
-  },
-  {
-    id: 4,
-    title: "Webinar: How to cope with trauma",
-    start: setEventDate("2025-02-06", 14, 0),
-    end: setEventDate("2025-02-06", 14, 30),
-    type: "event",
-  },
-  {
-    id: 5,
-    title: "Webinar: How to cope with trauma",
-    start: setEventDate("2025-02-17", 14, 0),
-    end: setEventDate("2025-02-17", 15, 0),
-    type: "event",
-  },
-  {
-    id: 6,
-    title: "Click for www.eventbrite.sg",
-    start: setEventDate("2025-02-14", 14, 0),
-    url: "https://www.eventbrite.sg/e/anh-thuc-su-giau-co-69-tphcm-202122032025-tickets-1108945538959?aff=ebdssbdestsearch&keep_tld=1",
-  },
-  {
-    id: 7,
-    title: "Weekly Meeting",
-    start: setEventDate("2025-02-07", 10, 0),
-    end: setEventDate("2025-02-07", 11, 30),
-    type: "appointment",
-    recurrence: {
-      freq: "WEEKLY",
-      interval: 1,
-      count: 5,
-    },
-  },
-  {
-    id: 8,
-    title: "Monthly Report",
-    start: setEventDate("2025-02-09", 14, 0),
-    end: setEventDate("2025-02-09", 15, 0),
-    type: "event",
-    recurrence: {
-      freq: "MONTHLY",
-      interval: 1,
-      count: 3,
-    },
-  },
-];
-
-const generateRecurringEvents = (eventList) => {
-  const generatedEvents = [];
-  eventList.forEach((event) => {
-    if (event.recurrence) {
-      const rule = new RRule({
-        freq: RRule[event.recurrence.freq],
-        dtstart: new Date(event.start),
-        interval: event.recurrence.interval || 1,
-        count: event.recurrence.count || null,
-      });
-
-      rule.all().forEach((date) => {
-        generatedEvents.push({
-          ...event,
-          start: date,
-          end: new Date(
-            date.getTime() + (new Date(event.end) - new Date(event.start))
-          ),
-        });
-      });
-    } else {
-      generatedEvents.push(event);
-    }
-  });
-  return generatedEvents;
-};
+//       rule.all().forEach((date) => {
+//         generatedEvents.push({
+//           ...event,
+//           start: date,
+//           end: new Date(
+//             date.getTime() + (new Date(event.end) - new Date(event.start))
+//           ),
+//         });
+//       });
+//     } else {
+//       generatedEvents.push(event);
+//     }
+//   });
+//   return generatedEvents;
+// };
 
 const CalendarApp = () => {
+  const dispatch = useDispatch();
+  const { eventsData } = useSelector((state) => state.events);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [editingEvent, setEditingEvent] = useState(null);
 
-  const [events, setEvents] = useState(() => {
-    const savedEvents = localStorage.getItem("events");
-    return savedEvents
-      ? JSON.parse(savedEvents).map((event) => ({
-          ...event,
-          start: new Date(event.start),
-          end: event.end ? new Date(event.end) : null,
-        }))
-      : generateRecurringEvents(initialEvents);
-  });
+  const [events, setEvents] = useState([]);
+  // const [events, setEvents] = useState(() => {
+  //   const savedEvents = localStorage.getItem("events");
+  //   return savedEvents
+  //     ? JSON.parse(savedEvents).map((event) => ({
+  //         ...event,
+  //         start: new Date(event.start),
+  //         end: event.end ? new Date(event.end) : null,
+  //       }))
+  //     : generateRecurringEvents(eventsData);
+  // });
 
   const formattedDate = selectedDate.toLocaleDateString("en-CA");
 
   const dailyEvents = events.filter((event) => {
-    const eventDate = event.start.toLocaleDateString("en-CA");
+    const eventDate =
+      event.start instanceof Date
+        ? event.start.toLocaleDateString("en-CA")
+        : new Date(event.start).toLocaleDateString("en-CA");
+
     return eventDate === formattedDate;
   });
 
@@ -148,42 +89,43 @@ const CalendarApp = () => {
     localStorage.setItem("events", JSON.stringify(updatedEvents));
   };
 
-  const addEvent = (eventData) => {
-    const newEvent = {
-      title: eventData.title,
-      start: new Date(eventData.start),
-      end: eventData.end ? new Date(eventData.end) : null,
-      type: eventData.type,
-    };
-
-    const updatedEvents = [...events, newEvent];
-    setEvents(updatedEvents);
-    localStorage.setItem("events", JSON.stringify(updatedEvents));
+  const handleAddEvent = async (eventData) => {
+    await dispatch(postEvents(eventData));
+    dispatch(fetchAllEvents());
   };
 
-  const updateEvent = (eventData) => {
-    const updatedEvents = events.map((event) => {
-      return event.start.getTime() === editingEvent.start.getTime()
-        ? { ...event, ...eventData }
-        : event;
-    });
-    setEvents(updatedEvents);
-    localStorage.setItem("events", JSON.stringify(updatedEvents));
-    setEditingEvent(null);
+  const handleUpdateEvent = async (eventData) => {
+    console.log(eventData);
+    await dispatch(patchEvents({ id: editingEvent.id, eventData }));
+    dispatch(fetchAllEvents());
   };
 
-  const deleteEvent = (start) => {
+  const handleDeleteEvent = async (id) => {
     const isConfirmed = window.confirm(
       "Are you sure you want to delete this event?"
     );
     if (!isConfirmed) return;
 
-    const updatedEvents = events.filter(
-      (event) => event.start.getTime() !== start.getTime()
-    );
-    setEvents(updatedEvents);
-    localStorage.setItem("events", JSON.stringify(updatedEvents));
+    await dispatch(removeEvents(id));
+    setEvents((prevEvents) => prevEvents.filter(event => event.id !== id));
+    dispatch(fetchAllEvents());
   };
+
+  useEffect(() => {
+    if (eventsData.length > 0) {
+      setEvents(
+        eventsData.map((event) => ({
+          ...event,
+          start: new Date(event.start),
+          end: event.end ? new Date(event.end) : null,
+        }))
+      );
+    }
+  }, [eventsData]);
+
+  useEffect(() => {
+    dispatch(fetchAllEvents());
+  }, [dispatch]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 p-4 bg-[#E4F6ED] min-h-screen">
@@ -194,22 +136,22 @@ const CalendarApp = () => {
             selectedDate={selectedDate}
           />
           <EventForm
-            onAddEvent={addEvent}
+            onAddEvent={handleAddEvent}
             editingEvent={editingEvent}
-            onUpdateEvent={updateEvent}
+            onUpdateEvent={handleUpdateEvent}
           />
         </div>
 
         <EvenList
           dailyEvents={dailyEvents}
           onEditEvent={setEditingEvent}
-          onDeleteEvent={deleteEvent}
+          onDeleteEvent={handleDeleteEvent}
         />
       </div>
       <Note isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="w-full min-h-96 p-4 mb-10">
         <Button onClick={() => setIsOpen(true)}>Note</Button>
-        <MainCalendar events={events} handleEventDrop={handleEventDrop} />
+        <MainCalendar events={eventsData} handleEventDrop={handleEventDrop} />
       </div>
     </div>
   );

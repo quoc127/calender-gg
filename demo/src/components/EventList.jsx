@@ -40,7 +40,7 @@ export const EvenList = ({ dailyEvents, onEditEvent, onDeleteEvent  }) => {
                 </button>
 
                 <button
-                  onClick={() => onDeleteEvent(event.start)}
+                  onClick={() => onDeleteEvent(event.id)}
                   className="bg-yellow-500 text-black px-3 py-1 rounded"
                 >
                   Delete
