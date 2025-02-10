@@ -16,8 +16,6 @@ export const postEvents = createAsyncThunk("post-events", async (eventData) => {
 });
 
 export const patchEvents = createAsyncThunk("patch-events", async ({ id, eventData }) => {
-  console.log(id,eventData);
-  
   const response = await patchEvent(id,eventData);
   return response.data;
 });

@@ -3,7 +3,7 @@ import { MainCalendar } from "@/components/MainCalendar";
 import { MiniCalendar } from "@/components/MiniCalendar";
 import "react-calendar/dist/Calendar.css";
 import { EvenList } from "@/components/EventList";
-import { RRule } from "rrule";
+// import { RRule } from "rrule";
 import { EventForm } from "@/components/EventForm";
 import { Button } from "@/components/ui/button";
 import { Note } from "@/components/Note";
@@ -15,36 +15,39 @@ import {
   removeEvents,
 } from "@/store/events-slice";
 
-const generateRecurringEvents = (eventList) => {
-  const generatedEvents = [];
-  console.log("generatedEvents",generatedEvents);
-  
-  eventList.forEach((event) => {
-    if (event.recurrence) {
-      const rule = new RRule({
-        freq: RRule[event.recurrence.freq.toUpperCase()],
-        dtstart: new Date(event.start),
-        interval: event.recurrence.interval || 1,
-        count: event.recurrence.count || null,
-      });
+// const generateRecurringEvents = (eventList) => {
+//   console.log("eventList",eventList);
 
-      rule.all().forEach((date) => {
-        generatedEvents.push({
-          ...event,
-          start: new Date(date),
-          end: event.end ? new Date(date.getTime() + (new Date(event.end) - new Date(event.start))) : null,
-        });
-      });
-    } else {
-      generatedEvents.push({
-        ...event,
-        start: new Date(event.start),
-        end: event.end ? new Date(event.end) : null, 
-      });
-    }
-  });
-  return generatedEvents;
-};
+//   const generatedEvents = [];
+//   console.log("generatedEvents",generatedEvents);
+
+//   eventList.forEach((event) => {
+//     if (event.recurrence) {
+//       const rule = new RRule({
+//         freq: RRule[event.recurrence.freq.toUpperCase()],
+//         dtstart: new Date(event.start),
+//         interval: event.recurrence.interval || 1,
+//         count: event.recurrence.count || null,
+//       });
+//       console.log("rule",  rule);
+
+//       rule.all().forEach((date) => {
+//         generatedEvents.push({
+//           ...event,
+//           start: new Date(date),
+//           end: event.end ? new Date(date.getTime() + (new Date(event.end) - new Date(event.start))) : null,
+//         });
+//       });
+//     } else {
+//       generatedEvents.push({
+//         ...event,
+//         start: new Date(event.start),
+//         end: event.end ? new Date(event.end) : null,
+//       });
+//     }
+//   });
+//   return generatedEvents;
+// };
 
 const CalendarApp = () => {
   const dispatch = useDispatch();
@@ -56,15 +59,24 @@ const CalendarApp = () => {
   const [events, setEvents] = useState([]);
 
   const formattedDate = selectedDate.toLocaleDateString("en-CA");
+  // const dailyEvents = events.filter((event) => {
+  //   const eventDate =
+  //     event.start instanceof Date
+  //       ? event.start.toLocaleDateString("en-CA")
+  //       : new Date(event.start).toLocaleDateString("en-CA");
 
-  const dailyEvents = events.filter((event) => {
-    const eventDate =
-      event.start instanceof Date
-        ? event.start.toLocaleDateString("en-CA")
-        : new Date(event.start).toLocaleDateString("en-CA");
+  //   return eventDate === formattedDate;
+  // });
 
-    return eventDate === formattedDate;
-  });
+  const dailyEvents = eventsData
+    .map((event) => ({
+      ...event,
+      start: new Date(event.start),
+      end: event.end ? new Date(event.end) : null,
+    }))
+    .filter(
+      (event) => event.start.toLocaleDateString("en-CA") === formattedDate
+    );
 
   const handleEventDrop = (eventDropInfo) => {
     const updatedEvents = events.map((event) =>
@@ -87,7 +99,6 @@ const CalendarApp = () => {
   };
 
   const handleUpdateEvent = async (eventData) => {
-    console.log(eventData);
     await dispatch(patchEvents({ id: editingEvent.id, eventData }));
     await dispatch(fetchAllEvents());
   };
@@ -102,10 +113,7 @@ const CalendarApp = () => {
     await dispatch(fetchAllEvents());
   };
   useEffect(() => {
-    if (eventsData.length > 0) {
-      const recurringEvents = generateRecurringEvents(eventsData);
-      setEvents(recurringEvents);
-    }
+    setEvents(eventsData);
   }, [eventsData]);
 
   useEffect(() => {

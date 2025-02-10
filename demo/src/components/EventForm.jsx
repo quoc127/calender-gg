@@ -10,11 +10,6 @@ export const EventForm = ({ onAddEvent, editingEvent, onUpdateEvent }) => {
   );
   const [type, setType] = useState(editingEvent ? editingEvent.type : "appointment");
 
-  const [isRecurring, setIsRecurring] = useState(editingEvent?.recurrence ? true : false);
-  const [freq, setFreq] = useState(editingEvent?.recurrence?.freq || "DAILY");
-  const [interval, setInterval] = useState(editingEvent?.recurrence?.interval || 1);
-  const [count, setCount] = useState(editingEvent?.recurrence?.count || 5);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title || !start) {
@@ -26,13 +21,6 @@ export const EventForm = ({ onAddEvent, editingEvent, onUpdateEvent }) => {
       start: new Date(start),
       end: end ? new Date(end) : null,
       type: type,
-      recurrence: isRecurring
-        ? {
-            freq: freq,
-            interval: Number(interval),
-            count: Number(count),
-          }
-        : null,
     };
 
     if (editingEvent) {
@@ -44,24 +32,35 @@ export const EventForm = ({ onAddEvent, editingEvent, onUpdateEvent }) => {
     setStart("");
     setEnd("");
     setType("appointment");
-    setIsRecurring(false);
-    setFreq("DAILY");
-    setInterval(1);
-    setCount(5);
   };
+
+  // useEffect(() => {
+  //   if (editingEvent) {
+  //     setTitle(editingEvent.title);
+  //     setStart(new Date(editingEvent.start).toISOString().slice(0, 16));
+  //     setEnd(editingEvent.end ? new Date(editingEvent.end).toISOString().slice(0, 16) : "");
+  //     setType(editingEvent.type);
+  //   }
+  // }, [editingEvent]);
 
   useEffect(() => {
     if (editingEvent) {
       setTitle(editingEvent.title);
-      setStart(new Date(editingEvent.start).toISOString().slice(0, 16));
-      setEnd(editingEvent.end ? new Date(editingEvent.end).toISOString().slice(0, 16) : "");
+  
+      const localStart = new Date(editingEvent.start);
+      localStart.setMinutes(localStart.getMinutes() - localStart.getTimezoneOffset()); 
+  
+      const localEnd = editingEvent.end ? new Date(editingEvent.end) : null;
+      if (localEnd) {
+        localEnd.setMinutes(localEnd.getMinutes() - localEnd.getTimezoneOffset());
+      }
+  
+      setStart(localStart.toISOString().slice(0, 16));
+      setEnd(localEnd ? localEnd.toISOString().slice(0, 16) : "");
       setType(editingEvent.type);
-      setIsRecurring(!!editingEvent.recurrence);
-      setFreq(editingEvent?.recurrence?.freq || "daily");
-      setInterval(editingEvent?.recurrence?.interval || 1);
-      setCount(editingEvent?.recurrence?.count || 5);
     }
   }, [editingEvent]);
+  
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md max-w-80 mt-5 md:mt-5 md:m-auto lg:mt-0">
@@ -110,7 +109,7 @@ export const EventForm = ({ onAddEvent, editingEvent, onUpdateEvent }) => {
           </select>
         </div>
 
-        <div className="mb-3">
+        {/* <div className="mb-3">
           <label className="flex items-center">
             <input
               type="checkbox"
@@ -120,9 +119,9 @@ export const EventForm = ({ onAddEvent, editingEvent, onUpdateEvent }) => {
             />
             Repeat Event
           </label>
-        </div>
+        </div> */}
 
-        {isRecurring && (
+        {/* {isRecurring && (
           <>
             <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700">Repeat every</label>
@@ -160,7 +159,7 @@ export const EventForm = ({ onAddEvent, editingEvent, onUpdateEvent }) => {
               />
             </div>
           </>
-        )}
+        )} */}
 
         <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded">
           {editingEvent ? "Update" : "Add"}
