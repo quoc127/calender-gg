@@ -10,11 +10,6 @@ const EventSchema = mongoose.Schema(
       enum: ["appointment", "event"],
       default: "appointment",
     },
-    recurrence: {
-      freq: { type: String, enum: ["DAILY", "WEEKLY", "MONTHLY", "YEARLY"] },
-      interval: { type: Number, default: 1 },
-      count: { type: Number, default: null },
-    },
     deleted: { type: Boolean, default: false },
   },
   {

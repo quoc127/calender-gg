@@ -12,13 +12,6 @@ module.exports.getEvents = async (req, res) => {
         start: event.start,
         end: event.end,
         type: event.type,
-        recurrence: event.recurrence.freq
-          ? {
-              freq: event.recurrence.freq,
-              interval: event.recurrence.interval,
-              count: event.recurrence.count,
-            }
-          : null,
       };
     });
 
@@ -34,13 +27,12 @@ module.exports.getEvents = async (req, res) => {
 
 module.exports.postEvent = async (req, res) => {
   try {
-    const { title, start, end, type, recurrence } = req.body;
+    const { title, start, end, type } = req.body;
     const newEvent = new Event({
       title: title,
       start: new Date(start),
       end: new Date(end),
       type: type,
-      recurrence: recurrence || null,
     });
     await newEvent.save();
     return res.status(201).json({
@@ -77,7 +69,7 @@ module.exports.deleteEvent = async (req, res) => {
 module.exports.updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, start, end, type, recurrence } = req.body;
+    const { title, start, end, type } = req.body;
     const updatedEvent = await Event.findByIdAndUpdate(
       id,
       {
@@ -85,7 +77,6 @@ module.exports.updateEvent = async (req, res) => {
         start: start,
         end: end,
         type: type,
-        recurrence: recurrence,
       },
       { new: true }
     );
