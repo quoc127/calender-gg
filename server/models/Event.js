@@ -7,7 +7,7 @@ const EventSchema = mongoose.Schema(
     end: { type: Date, required: true },
     type: {
       type: String,
-      enum: ["appointment", "meeting"],
+      enum: ["appointment", "event"],
       default: "appointment",
     },
     recurrence: {
