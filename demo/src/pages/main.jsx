@@ -7,7 +7,6 @@ import { RRule } from "rrule";
 import { EventForm } from "@/components/EventForm";
 import { Button } from "@/components/ui/button";
 import { Note } from "@/components/Note";
-import { addEvent, deleteEvent, getEvents, patchEvent } from "@/service/event";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchAllEvents,
@@ -16,32 +15,36 @@ import {
   removeEvents,
 } from "@/store/events-slice";
 
-// const generateRecurringEvents = (eventList) => {
-//   const generatedEvents = [];
-//   eventList.forEach((event) => {
-//     if (event.recurrence) {
-//       const rule = new RRule({
-//         freq: RRule[event.recurrence.freq],
-//         dtstart: new Date(event.start),
-//         interval: event.recurrence.interval || 1,
-//         count: event.recurrence.count || null,
-//       });
+const generateRecurringEvents = (eventList) => {
+  const generatedEvents = [];
+  console.log("generatedEvents",generatedEvents);
+  
+  eventList.forEach((event) => {
+    if (event.recurrence) {
+      const rule = new RRule({
+        freq: RRule[event.recurrence.freq.toUpperCase()],
+        dtstart: new Date(event.start),
+        interval: event.recurrence.interval || 1,
+        count: event.recurrence.count || null,
+      });
 
-//       rule.all().forEach((date) => {
-//         generatedEvents.push({
-//           ...event,
-//           start: date,
-//           end: new Date(
-//             date.getTime() + (new Date(event.end) - new Date(event.start))
-//           ),
-//         });
-//       });
-//     } else {
-//       generatedEvents.push(event);
-//     }
-//   });
-//   return generatedEvents;
-// };
+      rule.all().forEach((date) => {
+        generatedEvents.push({
+          ...event,
+          start: new Date(date),
+          end: event.end ? new Date(date.getTime() + (new Date(event.end) - new Date(event.start))) : null,
+        });
+      });
+    } else {
+      generatedEvents.push({
+        ...event,
+        start: new Date(event.start),
+        end: event.end ? new Date(event.end) : null, 
+      });
+    }
+  });
+  return generatedEvents;
+};
 
 const CalendarApp = () => {
   const dispatch = useDispatch();
@@ -51,16 +54,6 @@ const CalendarApp = () => {
   const [editingEvent, setEditingEvent] = useState(null);
 
   const [events, setEvents] = useState([]);
-  // const [events, setEvents] = useState(() => {
-  //   const savedEvents = localStorage.getItem("events");
-  //   return savedEvents
-  //     ? JSON.parse(savedEvents).map((event) => ({
-  //         ...event,
-  //         start: new Date(event.start),
-  //         end: event.end ? new Date(event.end) : null,
-  //       }))
-  //     : generateRecurringEvents(eventsData);
-  // });
 
   const formattedDate = selectedDate.toLocaleDateString("en-CA");
 
@@ -86,18 +79,17 @@ const CalendarApp = () => {
     );
 
     setEvents(updatedEvents);
-    localStorage.setItem("events", JSON.stringify(updatedEvents));
   };
 
   const handleAddEvent = async (eventData) => {
     await dispatch(postEvents(eventData));
-    dispatch(fetchAllEvents());
+    await dispatch(fetchAllEvents());
   };
 
   const handleUpdateEvent = async (eventData) => {
     console.log(eventData);
     await dispatch(patchEvents({ id: editingEvent.id, eventData }));
-    dispatch(fetchAllEvents());
+    await dispatch(fetchAllEvents());
   };
 
   const handleDeleteEvent = async (id) => {
@@ -107,19 +99,12 @@ const CalendarApp = () => {
     if (!isConfirmed) return;
 
     await dispatch(removeEvents(id));
-    setEvents((prevEvents) => prevEvents.filter(event => event.id !== id));
-    dispatch(fetchAllEvents());
+    await dispatch(fetchAllEvents());
   };
-
   useEffect(() => {
     if (eventsData.length > 0) {
-      setEvents(
-        eventsData.map((event) => ({
-          ...event,
-          start: new Date(event.start),
-          end: event.end ? new Date(event.end) : null,
-        }))
-      );
+      const recurringEvents = generateRecurringEvents(eventsData);
+      setEvents(recurringEvents);
     }
   }, [eventsData]);
 
@@ -151,7 +136,7 @@ const CalendarApp = () => {
       <Note isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="w-full min-h-96 p-4 mb-10">
         <Button onClick={() => setIsOpen(true)}>Note</Button>
-        <MainCalendar events={eventsData} handleEventDrop={handleEventDrop} />
+        <MainCalendar events={events} handleEventDrop={handleEventDrop} />
       </div>
     </div>
   );
