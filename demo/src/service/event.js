@@ -2,7 +2,18 @@ import axios from "axios";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 export const getEvents = async () => {
-  return axios.get(`${serverUrl}/`);
+  try {
+    const response = await axios.get(`${serverUrl}/`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error.response || error);
+    throw error;
+  }
 };
 
 export const addEvent = async (eventData) => {
