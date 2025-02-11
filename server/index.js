@@ -35,9 +35,9 @@ const RoutesAPIVer1 = require("./routes/index-routes");
 RoutesAPIVer1(app);
 
 // Start server
-const PORT = process.env.PORT;
-app.listen(PORT, () => {
-  console.log(`Server is running at port ${PORT}`);
-});
+// const PORT = process.env.PORT;
+// app.listen(PORT, () => {
+//   console.log(`Server is running at port ${PORT}`);
+// });
 
 module.exports = app;
