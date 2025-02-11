@@ -78,19 +78,35 @@ const CalendarApp = () => {
       (event) => event.start.toLocaleDateString("en-CA") === formattedDate
     );
 
-  const handleEventDrop = (eventDropInfo) => {
-    const updatedEvents = events.map((event) =>
-      event.title === eventDropInfo.event.title &&
-      event.start.getTime() === new Date(eventDropInfo.oldEvent.start).getTime()
-        ? {
-            ...event,
-            start: new Date(eventDropInfo.event.start),
-            end: event.end ? new Date(eventDropInfo.event.end) : null,
-          }
-        : event
-    );
+  // const handleEventDrop = (eventDropInfo) => {
+  //   const updatedEvents = eventsData.map((event) =>
+  //     event.title === eventDropInfo.event.title &&
+  //     event.start.getTime() === new Date(eventDropInfo.oldEvent.start).getTime()
+  //       ? {
+  //           ...event,
+  //           start: new Date(eventDropInfo.event.start),
+  //           end: event.end ? new Date(eventDropInfo.event.end) : null,
+  //         }
+  //       : event
+  //   );
 
-    setEvents(updatedEvents);
+  //   setEvents(updatedEvents);
+  // };
+  const handleEventDrop = async (eventDropInfo) => {
+    const { event } = eventDropInfo;
+
+    // Tạo dữ liệu sự kiện cập nhật
+    const updatedEvent = {
+      id: event.id,
+      title: event.title,
+      start: event.start.toISOString(),
+      end: event.end ? event.end.toISOString() : null,
+    };
+
+    await dispatch(
+      patchEvents({ id: updatedEvent.id, eventData: updatedEvent })
+    );
+    await dispatch(fetchAllEvents());
   };
 
   const handleAddEvent = async (eventData) => {
