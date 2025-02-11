@@ -6,7 +6,7 @@ const app = express();
 // CORS
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://calender-gg-d9tm.vercel.app"],
+    origin: "*",
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
     allowedHeaders: [
       "Content-Type",
