@@ -10,6 +10,7 @@ const EventSchema = mongoose.Schema(
       enum: ["appointment", "event"],
       default: "appointment",
     },
+    url: { type: String, default: "" },
     deleted: { type: Boolean, default: false },
   },
   {

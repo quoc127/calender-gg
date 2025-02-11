@@ -1,4 +1,3 @@
-const e = require("express");
 const Event = require("../models/Event");
 
 module.exports.getEvents = async (req, res) => {
@@ -12,6 +11,7 @@ module.exports.getEvents = async (req, res) => {
         start: event.start,
         end: event.end,
         type: event.type,
+        url: event.url
       };
     });
 
@@ -27,12 +27,13 @@ module.exports.getEvents = async (req, res) => {
 
 module.exports.postEvent = async (req, res) => {
   try {
-    const { title, start, end, type } = req.body;
+    const { title, start, end, type, url } = req.body;
     const newEvent = new Event({
       title: title,
       start: new Date(start),
       end: new Date(end),
       type: type,
+      url: url,
     });
     await newEvent.save();
     return res.status(201).json({
@@ -69,7 +70,7 @@ module.exports.deleteEvent = async (req, res) => {
 module.exports.updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, start, end, type } = req.body;
+    const { title, start, end, type, url } = req.body;
     const updatedEvent = await Event.findByIdAndUpdate(
       id,
       {
@@ -77,6 +78,7 @@ module.exports.updateEvent = async (req, res) => {
         start: start,
         end: end,
         type: type,
+        url: url,
       },
       { new: true }
     );
