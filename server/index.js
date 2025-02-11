@@ -25,7 +25,7 @@ app.use(
       "Cache-Control",
       "Expires",
       "Pragma"
-    ]
+    ],
   })
 );
 

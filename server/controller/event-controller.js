@@ -3,9 +3,6 @@ const Event = require("../models/Event");
 
 module.exports.getEvents = async (req, res) => {
   try {
-    res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
     const events = await Event.find({ deleted: false });
 
     const formattedEvents = events.map((event) => {
