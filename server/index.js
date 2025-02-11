@@ -4,19 +4,31 @@ const cors = require("cors");
 const app = express();
 
 // CORS
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://calender-gg-d9tm.vercel.app"
+];
+
 app.use(
   cors({
-    origin: "*",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
       "Cache-Control",
       "Expires",
-      "Pragma",
-    ],
+      "Pragma"
+    ]
   })
 );
+
 
 const bodyParser = require("body-parser");
 // Support parsing of application/json type post data
