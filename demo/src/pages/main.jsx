@@ -39,6 +39,20 @@ const CalendarApp = () => {
       (event) => event.start.toLocaleDateString("en-CA") === formattedDate
     );
 
+  // const handleEventDrop = (eventDropInfo) => {
+  //   const updatedEvents = eventsData.map((event) =>
+  //     event.title === eventDropInfo.event.title &&
+  //     event.start.getTime() === new Date(eventDropInfo.oldEvent.start).getTime()
+  //       ? {
+  //           ...event,
+  //           start: new Date(eventDropInfo.event.start),
+  //           end: event.end ? new Date(eventDropInfo.event.end) : null,
+  //         }
+  //       : event
+  //   );
+
+  //   setEvents(updatedEvents);
+  // };
   const handleEventDrop = async (eventDropInfo) => {
     const { event } = eventDropInfo;
 
